@@ -17,6 +17,10 @@ for p in ports:
     if "COM3" in p.device:
         port = p.device
         break
+
+    if "COM4" in p.device:
+        port = p.device
+        break
     
 
 arduino = Serial(port, baudrate=115200) 
@@ -26,14 +30,13 @@ while 1:
         break
 
 OpenHardwareMonitor = WMI(namespace="root\\OpenHardwareMonitor")
-fontsize = 4
 
 while 1:
     cpu_temp = int(OpenHardwareMonitor.Sensor(["Value"], Identifier="/amdcpu/0/temperature/0")[0].Value)
     gpu_temp = int(OpenHardwareMonitor.Sensor(["Value"], Identifier="/nvidiagpu/0/temperature/0")[0].Value)    
     cpu_usage = int(OpenHardwareMonitor.Sensor(["Value"], Identifier="/amdcpu/0/load/0")[0].Value) 
     gpu_usage = int(OpenHardwareMonitor.Sensor(["Value"], Identifier="/nvidiagpu/0/load/0")[0].Value) 
-    stat = str(fontsize) + str(gpu_temp) + " " + str(cpu_temp) + "\n" +  ("XX", str(gpu_usage))[gpu_usage < 100].zfill(2) + " " + ("XX", str(cpu_usage))[cpu_usage < 100].zfill(2)
+    stat = ("99", str(gpu_usage))[gpu_usage < 100].zfill(2) + str(gpu_temp).zfill(2) + ("99", str(cpu_usage))[cpu_usage < 100].zfill(2) + str(cpu_temp).zfill(2)
     arduino.write(str.encode(stat))
     sleep(1)
 
